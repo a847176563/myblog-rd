@@ -1,31 +1,36 @@
 const db = require('./db');
 
 module.exports = {
-    
-    getBlogs(){
+
+    getBlogs() {
         return db.query('SELECT * FROM t_blog ')
     },
-    getBlogById(blogId){
-        
+    getBlogById(blogId) {
+
         return db.query(`
         SELECT blog.*, comm.comm_id, comm.content as comm_content, comm.post_time as comm_post_time, usr.username
         FROM t_blog blog  LEFT JOIN t_comment comm 
         ON comm.blog_id=blog.blog_id 
         LEFT JOIN t_user usr ON comm.user_id=usr.user_id
         WHERE blog.blog_id=?`,
-        [blogId]);
-    },saveBlogData(title, content, userId){
+            [blogId]);
+    }, saveBlogData(title, content, userId) {
         // console.log('数据库',user);
         return db.query('insert into t_blog set ?', {
-            title, 
-            content, 
+            title,
+            content,
             user_id: userId
         });
-    
-    },saveDisscus(user){
+
+    }, saveDisscus(user) {
+        // return db.query('INSERT INTO t_comment set ?', user)
         return db.query('INSERT INTO t_comment set ?', user)
+    }, reviseBlog(title, content, blogId) {
+        return db.query("UPDATE t_blog SET title = '" + title + "' , content = '" + content + "' WHERE blog_id = " + blogId + "")
+    },deleteBlog(blogId){
+        return db.query("DELETE FROM t_blog WHERE blog_id =?",blogId)
     }
 
-    
+
 
 };
